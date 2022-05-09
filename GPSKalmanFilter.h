@@ -28,6 +28,8 @@ class GPSKF
         double _dt;
         double N;
         double E;
+		double auxN = 0;
+		double auxE = 0;
         //x -> state vector
         double _x_N[2][1]; //= {{0},{0}};
         //P -> Covariance Matrix

@@ -24,14 +24,14 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
     
 
     double haver = Haversine().calcDistance(lat_old, lng_old, lat_cur, lng_cur);
-    double bear = Haversine().calcBearing(lat_old, lng_old, lat_cur, lng_cur);
-	Serial.print(haver);Serial.print(",");Serial.print(bear);Serial.print(",");
+    //double bear = Haversine().calcBearing(lat_old, lng_old, lat_cur, lng_cur);
+	//Serial.println(bear);
+	double bear = angle;
+	
+	//Serial.print(haver);Serial.print(",");Serial.print(bear);Serial.print(",");
 	
 	//Serial.print(bear);Serial.print(",");Serial.println(angle);
       
-    //double Ndist = haver*cos(bear); //deslocamento em N entre lat_anterior e lat_atual
-    //double vN = velocity*cos(bear);
-	//double aN = acceleration*cos(bear);
 	double aN = 0;
 	double vN = 0;
 	double Ndist = 0;
@@ -40,16 +40,16 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
 	double vE = 0;
 	double Edist = 0;
 	
-/* 	if(nSatelite < 3){
-		aN = acceleration*cos(angle);
-		vN = (aN - aNold)*(_dt) + vNold;
+ 	if(nSatelite < 3){
+		aN = acceleration*cos(bear);
+		vN = (aN)*(_dt) + vNold;
 		Ndist = (vN - vNold)*(_dt) + NdistOld;
 		
 		aE = acceleration*cos(angle);
-		vE = (aE - aEold)*(_dt) + vEold;
+		vE = (aE)*(_dt) + vEold;
 		Edist = (vE - vEold)*(_dt) + EdistOld;
 
-	}else{ */
+	}else{ 
 		Ndist = haver*cos(bear); //deslocamento em N entre lat_anterior e lat_atual
 		vN = velocity*cos(bear);
 		aN = acceleration*cos(bear);
@@ -59,28 +59,20 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
 		vE = velocity*sin(bear);
 		aE = acceleration*sin(bear);
 		//EdistOld = Edist;
-//	}
-/* 	aNold = aN;
+	}
+	aNold = aN;
 	vNold = vN;
 	NdistOld = Ndist;
 	aEold = aE;
 	vEold = vE;
-	EdistOld = Edist; */
+	EdistOld = Edist;
 	
-	//double Ndist = haver*cos(angle); //deslocamento em N entre lat_anterior e lat_atual
-    //double vN = velocity*cos(angle);
-	//double aN = acceleration*cos(angle);
     N = N + Ndist;
 	Serial.print(N);Serial.print(",");
 
-    //double Edist = haver*sin(bear); //deslocamento em N entre lng_anterior e lng_atual
-    //double vE = velocity*sin(bear);
-	//double aE = acceleration*sin(bear);
     E = E + Edist;
 	Serial.print(E);Serial.print(",");
-        
-    double auxN = N;
-    double auxE = E;
+
       
     //VARIABLES TO CALCULATE THE FILTER
     //F -> Transition State Matrix
@@ -251,7 +243,8 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
                 for(uint8_t j=0; j<2; j++){
                     _P_N[i][j] = _P_N[i][j] - aux9[i][j];}}
 
-            N = _x_N[0][0];
+            //N = _x_N[0][0];
+			Serial.print(_x_N[0][0]);Serial.print(",");
       
         }else if(NE == 1){
             //calculation for predict x = F @ x
@@ -370,29 +363,30 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
                 for(uint8_t j=0; j<2; j++){
                     _P_E[i][j] = _P_E[i][j] - aux9[i][j];}}
 
-            E = _x_E[0][0];
+            //E = _x_E[0][0];
+			Serial.print(_x_E[0][0]);Serial.print(",");
+			
       }
     }
-      
-    auxN = auxN - N;
-    auxE = auxE - E;
-    bear = Haversine().rtod(atan(auxE / auxN));
-	Serial.print(bear);Serial.print(",");
-    //bear = Haversine().rtod(bear);
-    haver = auxN/cos(bear);
-
+	
+	double rN = _x_N[0][0] - auxN;
+    double rE = _x_E[0][0] - auxE;
+    
+    double br = atan(rE / rN);
+    
+    double hv = rN/cos(bear);
+    
     double lat2, lon2;
-    double dist = haver / 6378140;
-	Serial.print(dist);Serial.print(",");
-    lat_old = Haversine().dtor(lat_old);
+    double dist = hv / 6378140;
+	lat_old = Haversine().dtor(lat_old);
     lng_old = Haversine().dtor(lng_old);  
     lat2 = asin(sin(lat_old) * cos(dist) + cos(lat_old) * sin(dist) * cos(bear));
     lon2 = lng_old + atan2( sin(bear) * sin(dist) * cos(lat_old), cos(dist) - sin(lat_old) * sin(lat2) );
 
     latitude_filter =  Haversine().rtod(lat2);
     longitude_filter = Haversine().rtod(lon2);
-
-    auxN = 0;
-    auxE = 0;
     
+    auxN = _x_N[0][0];
+    auxE = _x_E[0][0];
+	
 }
