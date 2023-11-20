@@ -68,10 +68,10 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
 	EdistOld = Edist;
 	
     	N = N + Ndist;
-	Serial.print(N);Serial.print(",");
+	//Serial.print(N);//Serial.print(",");
 
     	E = E + Edist;
-	Serial.print(E);Serial.print(",");
+	//Serial.print(E);//Serial.print(",");
 
       
     	//VARIABLES TO CALCULATE THE FILTER
@@ -244,7 +244,7 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
 			    _P_N[i][j] = _P_N[i][j] - aux9[i][j];}}
 
             	    //N = _x_N[0][0];
-		    Serial.print(_x_N[0][0]);Serial.print(",");
+		    //Serial.print(_x_N[0][0]);//Serial.print(",");
       
 		}else if(NE == 1){
 		    //calculation for predict x = F @ x
@@ -364,7 +364,7 @@ void GPSKF::filterCalculation(double lat_old, double lng_old, double lat_cur, do
 			    _P_E[i][j] = _P_E[i][j] - aux9[i][j];}}
 
 		    //E = _x_E[0][0];
-		    Serial.print(_x_E[0][0]);Serial.print(",");
+		    //Serial.print(_x_E[0][0]);//Serial.print(",");
 			
       }
     }
