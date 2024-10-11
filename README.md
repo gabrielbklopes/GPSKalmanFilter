@@ -8,6 +8,6 @@ You can then, call the filterCalculation function and pass the values to the fil
 
 Remember this library doesn't implement the best code practices but it works just fine.
 
-If any questions regarding this development contact me on my linkedin: https://www.linkedin.com/in/gabrielbklopes/ or in my email: gabrielbklopes@gmail.com
+If any questions regarding this development contact me on my linkedin: https://www.linkedin.com/in/gabrielkretlilopes/
 
 Gabriel Lopes!
